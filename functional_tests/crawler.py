@@ -1,9 +1,9 @@
 import sys
 import unittest
+import functional_tests
 
 from subprocess import Popen, PIPE, STDOUT
-from uiautomator import device as d
-from state_machine_crawler import State, Transition, StateMachineCrawler
+from state_machine_crawler import State, Transition
 
 
 class CommandExecutionError(Exception):
@@ -44,32 +44,22 @@ class InitialTransition(Transition):
     target_state = InstalledState
 
     def move(self):
-        cmd = "adb install -r App/build/outputs/apk/lokki-*-debug.apk"
-        call(cmd)
+        cmd1 = "adb shell pm clear com.fsecure.lokki"
+        call(cmd1)
+        cmd2 = "adb install -r App/build/outputs/apk/lokki-*-debug.apk"
+        call(cmd2)
 
 
 class LokkiLaunchedState(State):
 
     def verify(self):
-        return d(packageName='com.fsecure.lokki').wait.exists(timeout=10000)
+        return functional_tests.d(packageName='com.fsecure.lokki').wait.exists(timeout=10000)
 
     class LaunchLokkiTransition(Transition):
         source_state = InstalledState
 
         def move(self):
             cmd = "adb shell am start -n com.fsecure.lokki/com.fsecure.lokki.MainActivity"
+            print "ABOUT TO START ACTIVITY"
             call(cmd)
 
-
-class BaseTest(unittest.TestCase):
-
-    def setUp(self):
-        self.cr = StateMachineCrawler(d, InitialTransition)
-
-    def test_lokki_is_installed(self):
-        self.cr.move(InstalledState)
-        self.assertIs(self.cr.state, InstalledState)
-
-    def test_lokki_is_launched(self):
-        self.cr.move(LokkiLaunchedState)
-        self.assertIs(self.cr.state, LokkiLaunchedState)
