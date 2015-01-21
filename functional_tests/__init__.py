@@ -1,6 +1,7 @@
-import crawler
-import base_tests
+import initialization_tests
+import welcome_screen_tests
+
 from state_machine_crawler import State, Transition, StateMachineCrawler
 from uiautomator import device as d
 
-cr = StateMachineCrawler(d, crawler.InitialTransition)
+crawler = StateMachineCrawler(d, initialization_tests.InitialTransition)
