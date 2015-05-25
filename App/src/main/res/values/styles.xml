@@ -50,5 +50,9 @@
         <item name="android:textColor">@color/actionbar_text</item>
     </style>
 
+    <!-- Test theme for variations -->
+    <style name="AltTheme" parent="Theme.AppCompat.NoActionBar">
+
+    </style>
 
 </resources>

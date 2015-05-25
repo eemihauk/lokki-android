@@ -5,7 +5,9 @@ See LICENSE for details
 package cc.softwarefactory.lokki.android;
 
 import android.app.Application;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
@@ -18,10 +20,14 @@ import cc.softwarefactory.lokki.android.services.LocationService;
 import cc.softwarefactory.lokki.android.utilities.PreferenceUtils;
 import cc.softwarefactory.lokki.android.utilities.ServerApi;
 import cc.softwarefactory.lokki.android.utilities.Utils;
+import cc.softwarefactory.lokki.android.utilities.variability.VariationRequestTask;
+
 import com.google.android.gms.maps.GoogleMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.concurrent.ExecutionException;
 
 public class MainApplication extends Application {
 
@@ -51,6 +57,7 @@ public class MainApplication extends Application {
 
         Log.e(TAG, "Lokki started component");
 
+        getVariation();
         loadSetting();
 
         locationDisabledPromptShown = false;
@@ -94,6 +101,17 @@ public class MainApplication extends Application {
         }
 
         super.onCreate();
+    }
+
+    private void getVariation() {
+        AsyncTask<Context, Integer, Boolean> getVariationTask = new VariationRequestTask().execute(getApplicationContext());
+        try {
+            getVariationTask.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadSetting() {

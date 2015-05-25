@@ -4,7 +4,6 @@ See LICENSE for details
 */
 package cc.softwarefactory.lokki.android.activities;
 
-import android.support.v7.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -48,7 +48,7 @@ import cc.softwarefactory.lokki.android.utilities.PreferenceUtils;
 import cc.softwarefactory.lokki.android.utilities.ServerApi;
 import cc.softwarefactory.lokki.android.utilities.Utils;
 import cc.softwarefactory.lokki.android.utilities.gcm.GcmHelper;
-
+import cc.softwarefactory.lokki.android.utilities.variability.VariationUtils;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -67,14 +67,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     // TODO: make non static, put in shared prefs
     public static Boolean firstTimeLaunch;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         Log.e(TAG, "onCreate");
+
         mContactDataSource = new DefaultContactDataSource();
 
         super.onCreate(savedInstanceState);
+        setTheme(VariationUtils.getTheme(this));
         setContentView(R.layout.activity_main);
 
         mTitle = getTitle();
@@ -115,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     @Override
     protected void onResume() {
-
         super.onResume();
         Log.e(TAG, "onResume");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); // WAKE_LOCK
