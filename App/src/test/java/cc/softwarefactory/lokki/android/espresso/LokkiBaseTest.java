@@ -9,6 +9,7 @@ import cc.softwarefactory.lokki.android.activities.MainActivity;
 import cc.softwarefactory.lokki.android.espresso.utilities.MockDispatcher;
 import cc.softwarefactory.lokki.android.espresso.utilities.TestUtils;
 import cc.softwarefactory.lokki.android.utilities.ServerApi;
+import cc.softwarefactory.lokki.android.utilities.variability.VariationRequestTask;
 
 /**
  * Abstract base class for tests that want to have a mock HTTP server running on each test. Also has
@@ -39,6 +40,7 @@ public abstract class LokkiBaseTest extends ActivityInstrumentationTestCase2<Mai
 
         String mockUrl = mockWebServer.getUrl("/").toString();
         ServerApi.setApiUrl(mockUrl);
+        VariationRequestTask.setVariationApiUrl(mockUrl);
     }
 
     @Override

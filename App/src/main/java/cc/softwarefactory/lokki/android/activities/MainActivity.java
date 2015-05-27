@@ -44,6 +44,7 @@ import cc.softwarefactory.lokki.android.fragments.PreferencesFragment;
 import cc.softwarefactory.lokki.android.services.DataService;
 import cc.softwarefactory.lokki.android.services.LocationService;
 import cc.softwarefactory.lokki.android.utilities.DialogUtils;
+import cc.softwarefactory.lokki.android.utilities.NavDrawerMenuUtils;
 import cc.softwarefactory.lokki.android.utilities.PreferenceUtils;
 import cc.softwarefactory.lokki.android.utilities.ServerApi;
 import cc.softwarefactory.lokki.android.utilities.Utils;
@@ -190,43 +191,40 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        String[] menuOptions = getResources().getStringArray(R.array.menuOptions);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        mTitle = menuOptions[position];
+        String[] navDrawerMenuItems = NavDrawerMenuUtils.getNavDrawerMenuItems();
+        mTitle = navDrawerMenuItems[position];
         selectedOption = position;
+        String positionAsString = navDrawerMenuItems[position];
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(mTitle);
         }
-        switch (position) {
-
-            case 0: // Map
-                fragmentManager.beginTransaction().replace(R.id.container, new MapViewFragment()).commit();
-                break;
-
-            case 1: // Places
-                fragmentManager.beginTransaction().replace(R.id.container, new PlacesFragment()).commit();
-                break;
-
-            case 2: // People
-                fragmentManager.beginTransaction().replace(R.id.container, new ContactsFragment()).commit();
-                break;
-
-            case 3: // Settings
-                fragmentManager.beginTransaction().replace(R.id.container, new PreferencesFragment()).commit();
-                break;
-
-            case 4: // About
-                fragmentManager.beginTransaction().replace(R.id.container, new AboutFragment()).commit();
-                break;
-
-            default:
-                fragmentManager.beginTransaction().replace(R.id.container, new MapViewFragment()).commit();
-                break;
-        }
+        replaceFragmentTo(positionAsString);
         supportInvalidateOptionsMenu();
+    }
 
+    private void replaceFragmentTo(String positionAsString) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        if (positionAsString.equals(getResources().getString(R.string.map))) {
+            fragmentManager.beginTransaction().replace(R.id.container, new MapViewFragment()).commit();
+
+        } else if (positionAsString.equals(getResources().getString(R.string.places))) {
+            fragmentManager.beginTransaction().replace(R.id.container, new PlacesFragment()).commit();
+
+        } else if (positionAsString.equals(getResources().getString(R.string.contacts))) {
+            fragmentManager.beginTransaction().replace(R.id.container, new ContactsFragment()).commit();
+
+        } else if (positionAsString.equals(getResources().getString(R.string.settings))) {
+            fragmentManager.beginTransaction().replace(R.id.container, new PreferencesFragment()).commit();
+
+        } else if (positionAsString.equals(getResources().getString(R.string.about))) {
+            fragmentManager.beginTransaction().replace(R.id.container, new AboutFragment()).commit();
+
+        } else {
+            fragmentManager.beginTransaction().replace(R.id.container, new MapViewFragment()).commit();
+        }
     }
 
 
@@ -369,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         Log.e(TAG, "showUserInMap: " + email);
         MainApplication.emailBeingTracked = email;
         MainApplication.showPlaces = false;
-        mNavigationDrawerFragment.selectItem(0);
+        mNavigationDrawerFragment.selectItem(1);
     }
 
     public void toggleIDontWantToSee(View view) {

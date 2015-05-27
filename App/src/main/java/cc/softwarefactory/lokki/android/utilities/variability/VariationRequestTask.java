@@ -24,14 +24,17 @@ public class VariationRequestTask extends AsyncTask<Context, Integer, Boolean>{
         cb.url(VariationApiUrl).type(JSONObject.class);
         System.out.println("REQUESTING VARIATION FROM: " + VariationApiUrl);
         aq.sync(cb);
-        JSONObject variationJson = cb.getResult();
-        AjaxStatus status = cb.getStatus();
 
-        System.out.println("CALLBACK STATUS: " + status.getCode());
-        System.out.println("VARIATION JSON: " + variationJson.toString());
+        int statusCode = cb.getStatus().getCode();
+        System.out.println("CALLBACK STATUS: " + statusCode);
+        if (statusCode != 200) {
+            return false;
+        }
+
+        JSONObject variationJson = cb.getResult();
         if (variationJson != null) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            System.out.println("SAVING VARIATION JSON...");
+            System.out.println("SAVING VARIATION JSON: " + variationJson.toString());
             prefs.edit().putString(VariationUtils.KEY_VARIATION_JSON, variationJson.toString()).commit();
             return true;
         }
@@ -45,5 +48,10 @@ public class VariationRequestTask extends AsyncTask<Context, Integer, Boolean>{
             return getVariation(contexts[0]);
         }
         return false;
+    }
+
+    // For dependency injection
+    public static void setVariationApiUrl(String url) {
+        VariationApiUrl = url;
     }
 }

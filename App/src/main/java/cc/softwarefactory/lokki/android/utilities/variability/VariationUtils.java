@@ -3,12 +3,19 @@ package cc.softwarefactory.lokki.android.utilities.variability;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.preference.PreferenceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
 import cc.softwarefactory.lokki.android.R;
+import cc.softwarefactory.lokki.android.utilities.Utils;
 
 public class VariationUtils {
 
@@ -16,11 +23,11 @@ public class VariationUtils {
 
 
     public static int getTheme(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
-        String variationJsonString = prefs.getString(KEY_VARIATION_JSON, "{}");
-        System.out.println("APPLY VARIATION JSON THEME: " + variationJsonString);
+        JSONObject variationJson = getVariationJson(context);
+        if (variationJson == null || variationJson.length() == 0) {
+            return R.style.LokkiTheme;
+        }
         try {
-            JSONObject variationJson = new JSONObject(variationJsonString);
             if (variationJson.getInt("theme") != 0) {
                 return R.style.AltTheme;
             }
@@ -30,22 +37,14 @@ public class VariationUtils {
         return R.style.LokkiTheme;
     }
 
-
-    public static boolean applyVariation(Context context) {
+    protected static JSONObject getVariationJson(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         String variationJsonString = prefs.getString(KEY_VARIATION_JSON, "{}");
-        System.out.println("APPLY VARIATION JSON STRING" + variationJsonString.toString());
         try {
-            JSONObject variationJson = new JSONObject(variationJsonString);
-            if (variationJson.getInt("theme") != 0) {
-                context.setTheme(R.style.AltTheme);
-                System.out.println("THEME AFTER CHANGE: " + context.getTheme().toString());
-                return true;
-            }
+            return new JSONObject(variationJsonString);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
-
 }

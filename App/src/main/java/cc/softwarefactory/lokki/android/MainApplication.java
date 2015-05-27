@@ -17,9 +17,11 @@ import android.util.Log;
 
 import cc.softwarefactory.lokki.android.services.DataService;
 import cc.softwarefactory.lokki.android.services.LocationService;
+import cc.softwarefactory.lokki.android.utilities.NavDrawerMenuUtils;
 import cc.softwarefactory.lokki.android.utilities.PreferenceUtils;
 import cc.softwarefactory.lokki.android.utilities.ServerApi;
 import cc.softwarefactory.lokki.android.utilities.Utils;
+import cc.softwarefactory.lokki.android.utilities.variability.CustomizeNavDrawerTask;
 import cc.softwarefactory.lokki.android.utilities.variability.VariationRequestTask;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -58,6 +60,7 @@ public class MainApplication extends Application {
         Log.e(TAG, "Lokki started component");
 
         getVariation();
+        customizeAppFromVariation();
         loadSetting();
 
         locationDisabledPromptShown = false;
@@ -103,6 +106,10 @@ public class MainApplication extends Application {
         super.onCreate();
     }
 
+    private void customizeAppFromVariation() {
+        attemptToSetCustomizedNavDrawer();
+    }
+
     private void getVariation() {
         AsyncTask<Context, Integer, Boolean> getVariationTask = new VariationRequestTask().execute(getApplicationContext());
         try {
@@ -112,6 +119,19 @@ public class MainApplication extends Application {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean attemptToSetCustomizedNavDrawer() {
+        AsyncTask<Context, Integer, Boolean> customizeNavDrawerTask = new CustomizeNavDrawerTask().execute(getApplicationContext());
+        try {
+            return customizeNavDrawerTask.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        NavDrawerMenuUtils.setNavDrawerMenuItems(getResources().getStringArray(R.array.nav_drawer_menu_items));
+        return false;
     }
 
     private void loadSetting() {

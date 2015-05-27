@@ -28,8 +28,11 @@ import android.widget.ListView;
 
 import com.androidquery.AQuery;
 
+import java.util.Arrays;
+
 import cc.softwarefactory.lokki.android.R;
 import cc.softwarefactory.lokki.android.avatar.AvatarLoader;
+import cc.softwarefactory.lokki.android.utilities.NavDrawerMenuUtils;
 import cc.softwarefactory.lokki.android.utilities.PreferenceUtils;
 
 /**
@@ -55,14 +58,15 @@ public class NavigationDrawerFragment extends Fragment {
     private View mListViewHeader;
     private static final String TAG = "NavDrawerFragment";
 
-    private int mCurrentSelectedPosition = 1;
+    private int mCurrentSelectedNavDrawerListPosition = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+        // TODO: If there are no NavDrawer items in the variation, this will break things
+        // Select either the default item in NavDrawer ListView (value 1 - value 0 is the NavDrawer header) or the last selected item.
+        selectItem(mCurrentSelectedNavDrawerListPosition);
     }
 
     @Override
@@ -86,8 +90,10 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.addHeaderView(mListViewHeader, null, false);
         setUserInfo();
 
-        String[] menuOptions = getResources().getStringArray(R.array.menuOptions);
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(getActivity().getApplicationContext(),R.layout.drawer_list_item, R.id.nav_drawer_menu_item_text, menuOptions) {
+        String[] navDrawerMenuItems = NavDrawerMenuUtils.getNavDrawerMenuItems();
+        System.out.println(Arrays.toString(navDrawerMenuItems));
+
+        mDrawerListView.setAdapter(new ArrayAdapter<String>(getActivity().getApplicationContext(), R.layout.drawer_list_item, R.id.nav_drawer_menu_item_text, navDrawerMenuItems) {
 
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -96,7 +102,7 @@ public class NavigationDrawerFragment extends Fragment {
                 return viewItem;
             }
         });
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+        mDrawerListView.setItemChecked(mCurrentSelectedNavDrawerListPosition, true);
         return mDrawerListView;
     }
 
@@ -183,17 +189,17 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    public void selectItem(int position) {
+    public void selectItem(int navDrawerListPosition) {
 
-        mCurrentSelectedPosition = position;
+        mCurrentSelectedNavDrawerListPosition = navDrawerListPosition;
         if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(position, true);
+            mDrawerListView.setItemChecked(navDrawerListPosition, true);
         }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position - 1);
+            mCallbacks.onNavigationDrawerItemSelected(navDrawerListPosition - 1);
         }
     }
 
@@ -220,7 +226,6 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // If the drawer is open, show the contacts app actions in the action bar. See also
@@ -232,6 +237,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -255,9 +261,11 @@ public class NavigationDrawerFragment extends Fragment {
      * Callbacks interface that all activities using this fragment must implement.
      */
     public interface NavigationDrawerCallbacks {
+
         /**
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(int position);
     }
+
 }
